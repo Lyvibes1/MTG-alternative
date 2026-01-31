@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#6d28d9" />
+  <title>Cheap Swaps — MTG Budget Builder</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">♟️</div>
+      <div>
+        <div class="title">Cheap Swaps</div>
+        <div class="subtitle">Find cheaper functional substitutes for Commander</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn ghost" id="btnInstall" style="display:none;">Install</button>
+      <a class="btn ghost" href="https://scryfall.com" target="_blank" rel="noopener">Powered by Scryfall</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tabs">
+      <button class="tab active" data-tab="deck">Deck / Analyze</button>
+      <button class="tab" data-tab="search">Single Card Search</button>
+    </div>
+
+    <!-- Deck / Analyze -->
+    <section class="panel active" id="tabDeck">
+      <div class="grid">
+        <div class="card">
+          <h2>Import deck from Archidekt / Moxfield</h2>
+          <p class="muted">Paste a deck URL (public deck) and click Import. If import fails, export as text and paste in the deck box.</p>
+          <div class="row">
+            <input id="deckUrl" class="input" placeholder="Archidekt or Moxfield deck URL" />
+            <button class="btn" id="btnImportUrl">Import</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Analyze settings</h2>
+          <div class="form">
+            <label class="label">Price threshold (deck mode)</label>
+            <input id="priceThreshold" class="input" type="number" min="0" step="0.25" value="5" />
+
+            <label class="label">Max alternatives per card</label>
+            <input id="maxCandidates" class="input" type="number" min="1" max="24" step="1" value="8" />
+
+            <label class="check">
+              <input id="excludeReserved" type="checkbox" checked />
+              <span>Exclude Reserved List cards</span>
+            </label>
+
+            <div class="hint">
+              <strong>Tip:</strong> If you paste only <em>one card</em> in the deck box and click <strong>Analyze</strong>, it runs in <strong>single-card mode</strong> and uses the “Cheaper than $” cap from the Single Card Search tab.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row space-between">
+          <div>
+            <h2>Decklist</h2>
+            <p class="muted">One card per line. Example: <code>1 Rhystic Study</code></p>
+          </div>
+          <div class="row">
+            <button class="btn ghost" id="btnLoadExample">Load example</button>
+            <button class="btn" id="btnAnalyze">Analyze</button>
+            <button class="btn ghost" id="btnExport">Export CSV</button>
+          </div>
+        </div>
+
+        <textarea id="deckInput" class="textarea" placeholder="Paste your decklist here..."></textarea>
+
+        <div class="status" id="status">Ready.</div>
+      </div>
+
+      <div id="results"></div>
+    </section>
+
+    <!-- Single Card Search -->
+    <section class="panel" id="tabSearch">
+      <div class="card">
+        <h2>Find cheaper functional substitutes</h2>
+        <p class="muted">Search by card name, set a price cap, and get functionally similar cards (not reprints).</p>
+
+        <div class="grid">
+          <div>
+            <label class="label">Card name</label>
+            <input id="searchName" class="input" placeholder="e.g., Smothering Tithe" />
+          </div>
+          <div>
+            <label class="label">Cheaper than $</label>
+            <input id="searchMaxPrice" class="input" type="number" min="0" step="0.25" value="10" />
+          </div>
+          <div>
+            <label class="label">Max results</label>
+            <input id="searchMaxResults" class="input" type="number" min="1" max="24" step="1" value="12" />
+          </div>
+          <div class="row align-end">
+            <button class="btn" id="btnCardSearch">Search</button>
+          </div>
+        </div>
+
+        <div class="status" id="cardSearchStatus">Ready.</div>
+      </div>
+
+      <div id="cardSearchResults"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="muted">Cheap Swaps is an unofficial fan tool. Card data/images © Wizards of the Coast. Data via Scryfall.</span>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Register Service Worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+
+    // Install prompt
+    let deferredPrompt = null;
+    const btnInstall = document.getElementById("btnInstall");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      btnInstall.style.display = "inline-flex";
+    });
+    btnInstall?.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btnInstall.style.display = "none";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "Cheap Swaps — MTG Budget Builder",
+  "short_name": "Cheap Swaps",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0613",
+  "theme_color": "#6d28d9",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
